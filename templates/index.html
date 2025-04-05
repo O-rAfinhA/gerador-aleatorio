@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerador de Números Aleatórios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h1 class="mb-0">Gerador de Números Aleatórios</h1>
+                <div>
+                    {% if current_user.is_authenticated %}
+                        <span class="me-3">Olá, {{ current_user.username }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline-light">Sair</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light">Entrar</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <form method="POST" action="/generate">
+                            <button type="submit" class="btn btn-success btn-lg w-100">Gerar Novo Número (1-100)</button>
+                        </form>
+                        <form method="POST" action="/clear" class="mt-2">
+                            <button type="submit" class="btn btn-danger btn-lg w-100">Zerar Banco de Dados</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                Distribuição de Números
+                            </div>
+                            <div class="card-body">
+                                <canvas id="parityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="mt-4 mb-3">Histórico</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Data/Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for number in numbers %}
+                        <tr>
+                            <td>{{ number.value }}</td>
+                            <td>{{ number.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Configuração do gráfico de pizza
+        const ctx = document.getElementById('parityChart');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Pares ('+{{ even_count }}+')', 'Ímpares ('+{{ odd_count }}+')'],
+                datasets: [{
+                    data: [{{ even_count }}, {{ odd_count }}],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 99, 132, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

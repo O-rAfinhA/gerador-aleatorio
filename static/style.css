@@ -1,0 +1,19 @@
+.container {
+    max-width: 800px;
+}
+
+.card-header {
+    padding: 1.5rem;
+}
+
+.btn-success {
+    margin-bottom: 1rem;
+}
+
+.btn-danger {
+    margin-bottom: 2rem;
+}
+
+.table {
+    margin-top: 1rem;
+}
